@@ -1,0 +1,9 @@
+*venv
+*__init__.py
+*__pycache__
+*fix.txt
+*setup.cfg
+config.py
+
+*.idea
+*.coverage
