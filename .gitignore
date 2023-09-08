@@ -7,3 +7,4 @@ config.py
 *.idea
 *.coverage
 *.ini
+.pytest_cache

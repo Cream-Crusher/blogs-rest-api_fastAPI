@@ -50,25 +50,25 @@ def read_user(id: int, session: Session = Depends(get_session)):
     return user
 
 
-@router.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(id: int, session: Session = Depends(get_session)):
-    user = session.query(user_models.User).get(id)
-
-    if user:
-        session.delete(user)
-        session.commit()
-    else:
-        raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
-
-    return None
-
-
 @router.put('/user/{id}', response_model=user_schemas.CreateUserDTO)
 def update_user(id: int, username: str, session: Session = Depends(get_session)):
     user = session.query(user_models.User).get(id)
 
     if user:
         user.username = username
+        session.commit()
+    else:
+        raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
+
+    return user
+#
+#
+@router.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id: int, session: Session = Depends(get_session)):
+    user = session.query(user_models.User).get(id)
+
+    if user:
+        session.delete(user)
         session.commit()
     else:
         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
