@@ -6,7 +6,7 @@ from application.models import user as user_models
 from application.schemas import user as user_schemas
 from application.database import SessionLocal, Base, engine
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 
 
 Base.metadata.create_all(bind=engine)
@@ -22,18 +22,17 @@ def get_session():
         session.close()
 
 
-@router.get("/user", response_model=List[user_schemas.User])
-def read_todo_list(session: Session = Depends(get_session)):
+@router.get('/users', response_model=List[user_schemas.User])
+def read_users(session: Session = Depends(get_session)):
     user_list = session.query(user_models.User).all()
 
     return user_list
 
 
-@router.post("/user", response_model=user_schemas.CreateUserDTO, status_code=status.HTTP_201_CREATED)
+@router.post('/user', response_model=user_schemas.CreateUserDTO, status_code=status.HTTP_201_CREATED)
 def create_user(user: user_schemas.CreateUserDTO, session: Session = Depends(get_session)):
     user_db = user_models.User(username=user.username, email=user.email, password=user.password)
 
-    # add it to the session and commit it
     session.add(user_db)
     session.commit()
     session.refresh(user_db)
@@ -41,23 +40,37 @@ def create_user(user: user_schemas.CreateUserDTO, session: Session = Depends(get
     return user_db
 
 
-# @router.get('user/{id}')
-# def get_user(id: int):
-#     return '#'
+@router.get('/user/{id}', response_model=user_schemas.User)
+def read_user(id: int, session: Session = Depends(get_session)):
+    user = session.query(user_models.User).get(id)
 
-#
-# @router.post('user/creted', status_code=status.HTTP_201_CREATED)
-# def create_user(user: UserRequest):
-#     return '#'
-#
-#
-# @router.put('user/{id}')
-# def update_user(id: int):
-#     return '#'
-#
-#
-# @router.delete("user/{id}")
-# def delete_todo(id: int):
-#     return '#'
-#
-#
+    if not user:
+        raise HTTPException(status_code=404, detail=f'ser item with id {id} not found')
+
+    return user
+
+
+@router.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id: int, session: Session = Depends(get_session)):
+    user = session.query(user_models.User).get(id)
+
+    if user:
+        session.delete(user)
+        session.commit()
+    else:
+        raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
+
+    return None
+
+
+@router.put('/user/{id}', response_model=user_schemas.CreateUserDTO)
+def update_user(id: int, username: str, session: Session = Depends(get_session)):
+    user = session.query(user_models.User).get(id)
+
+    if user:
+        user.username = username
+        session.commit()
+    else:
+        raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
+
+    return user
