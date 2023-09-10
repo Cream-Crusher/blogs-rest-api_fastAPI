@@ -1,14 +1,3 @@
-# from sqlalchemy import create_engine
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker
-# from config import DATABASE_URL
-#
-# engine = create_engine(DATABASE_URL, echo=True)
-#
-# SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
-#
-# Base = declarative_base()
-#
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine

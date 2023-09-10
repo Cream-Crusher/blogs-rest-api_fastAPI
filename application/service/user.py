@@ -1,14 +1,16 @@
-from application.models.user import City
+from application.models.user import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_biggest_cities(session: AsyncSession) -> list[City]:
-    result = await session.execute(select(City).order_by(City.population.desc()).limit(20))
-    return result.scalars().all()
+async def get_user(session: AsyncSession) -> list[User]:
+    user_db = await session.execute(select(User).limit(10))
+
+    return user_db.scalars().all()
 
 
-def add_city(session: AsyncSession, name: str, population: int):
-    new_city = City(name=name, population=population)
-    session.add(new_city)
-    return new_city
+def add_user(session: AsyncSession, username: str, email: str, password: str):
+    user_db = User(username=username, email=email, password=password)
+    session.add(user_db)
+
+    return user_db

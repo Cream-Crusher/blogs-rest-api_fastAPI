@@ -1,109 +1,33 @@
 from fastapi import Depends, APIRouter
 from sqlalchemy.exc import IntegrityError
 from application.database import get_session
-from application.schemas.user import CitySchema
+from application.schemas.user import UserGet, CreateUserDTO
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from application.service.user import get_biggest_cities, add_city
+from application.service.user import add_user, get_user
 
 
 router = APIRouter()
 
 
-@router.get("/cities/biggest", response_model=list[CitySchema])
-async def get_biggest_cities(session: AsyncSession = Depends(get_session)):
-    cities = await get_biggest_cities(session)
-    return [CitySchema(name=c.name, population=c.population) for c in cities]
+@router.get('/users/', response_model=list[UserGet])
+async def read_users(session: AsyncSession = Depends(get_session)):
+    users = await get_user(session)
+
+    users_schema = [
+        UserGet(id=user.id, username=user.username, email=user.email, is_active=user.is_active)
+        for user in users
+    ]
+
+    return users_schema
 
 
-@router.post("/cities/")
-async def add_city(city: CitySchema, session: AsyncSession = Depends(get_session)):
-    city = add_city(session, city.name, city.population)
+@router.post('/user/')
+async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
+    user = add_user(session, user.username, user.email, user.password)
+
     try:
         await session.commit()
-        return city
-    except IntegrityError as ex:
+        return user
+    except IntegrityError as e:
         await session.rollback()
-
-
-
-
-
-
-
-# from typing import List
-#
-# from sqlalchemy.orm import Session
-#
-# from application.models import user as user_models
-# from application.schemas import user as user_schemas
-# from application.database import SessionLocal, Base, engine
-#
-# from fastapi import APIRouter, Depends, status, HTTPException
-#
-#
-# Base.metadata.create_all(bind=engine)
-#
-# router = APIRouter()
-#
-#
-# def get_session():
-#     session = SessionLocal()
-#     try:
-#         yield session
-#     finally:
-#         session.close()
-#
-#
-# @router.get('/users', response_model=List[user_schemas.User])
-# def read_users(session: Session = Depends(get_session)):
-#     user_list = session.query(user_models.User).all()
-#
-#     return user_list
-#
-#
-# @router.post('/user', response_model=user_schemas.CreateUserDTO, status_code=status.HTTP_201_CREATED)
-# def create_user(user: user_schemas.CreateUserDTO, session: Session = Depends(get_session)):
-#     user_db = user_models.User(username=user.username, email=user.email, password=user.password)
-#
-#     session.add(user_db)
-#     session.commit()
-#     session.refresh(user_db)
-#
-#     return user_db
-#
-#
-# @router.get('/user/{id}', response_model=user_schemas.User)
-# def read_user(id: int, session: Session = Depends(get_session)):
-#     user = session.query(user_models.User).get(id)
-#
-#     if not user:
-#         raise HTTPException(status_code=404, detail=f'ser item with id {id} not found')
-#
-#     return user
-#
-#
-# @router.put('/user/{id}', response_model=user_schemas.CreateUserDTO)
-# def update_user(id: int, username: str, session: Session = Depends(get_session)):
-#     user = session.query(user_models.User).get(id)
-#
-#     if user:
-#         user.username = username
-#         session.commit()
-#     else:
-#         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
-#
-#     return user
-#
-#
-# @router.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
-# def delete_user(id: int, session: Session = Depends(get_session)):
-#     user = session.query(user_models.User).get(id)
-#
-#     if user:
-#         session.delete(user)
-#         session.commit()
-#     else:
-#         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
-#
-#     return user
