@@ -1,15 +1,20 @@
 from pydantic import BaseModel
 
 
-class UserSchema(BaseModel):
+class UserSchemaDTO(BaseModel):
     username: str
     email: str
 
 
-class CreateUserDTO(UserSchema):
+class DeleteUserDTO(BaseModel):
+    id: int
+
+
+
+class CreateUserDTO(UserSchemaDTO):
     password: str
 
 
-class UserGet(UserSchema):
+class GetUserDTO(UserSchemaDTO):
     id: int
     is_active: bool

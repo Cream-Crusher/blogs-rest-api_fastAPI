@@ -1,6 +1,6 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from application.models.user import User
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_users(session: AsyncSession) -> list[User]:
@@ -9,7 +9,7 @@ async def get_users(session: AsyncSession) -> list[User]:
     return user_db.scalars().all()
 
 
-def add_user(session: AsyncSession, username: str, email: str, password: str):
+def get_and_post_user(session: AsyncSession, username: str, email: str, password: str):
     user_db = User(username=username, email=email, password=password)
     session.add(user_db)
 
@@ -17,9 +17,9 @@ def add_user(session: AsyncSession, username: str, email: str, password: str):
 
 
 async def get_user_by_id(session: AsyncSession, user_id: int) -> User:
-    stmt = select(User).filter(User.id == user_id)
+    user = select(User).filter(User.id == user_id)
 
-    result = await session.execute(stmt)
+    result = await session.execute(user)
     user = result.scalar_one_or_none()  # Получаем одного пользователя или None
 
     return user
