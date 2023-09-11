@@ -3,7 +3,7 @@ from fastapi import HTTPException
 
 from application.database import get_session
 from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO
-from application.service.user import get_and_post_user, get_users, get_user_by_id
+from application.service.user import get_and_post_user, get_users, get_user, get_and_put_user
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,9 +17,7 @@ async def read_users(session: AsyncSession = Depends(get_session)):
     users_db = await get_users(session)
 
     if not users_db:
-        raise HTTPException(
-            status_code=400, detail=("Users not found")
-        )
+        raise HTTPException(status_code=400, detail=("Users not found"))
 
     users_db = [
         GetUserDTO(
@@ -34,20 +32,9 @@ async def read_users(session: AsyncSession = Depends(get_session)):
     return users_db
 
 
-@router.post('/user/')
-async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
-    user_db = get_and_post_user(session, user.username, user.email, user.password)
-
-    try:
-        await session.commit()
-        return user_db
-    except IntegrityError as e:
-        await session.rollback()
-
-
 @router.get('/user/{user_id}', response_model=GetUserDTO)
 async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
-    user_db = await get_user_by_id(session, user_id)
+    user_db = await get_user(session, user_id)
 
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
@@ -62,13 +49,43 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     return user
 
 
-@router.delete('/user/{user_id}', response_model=GetUserDTO)
+@router.delete('/user/{user_id}', response_model=DeleteUserDTO)
 async def delete_user(user_id: int, session: AsyncSession = Depends(get_session)):
-    user_db = await get_user_by_id(session, user_id)
+    user_db = await get_user(session, user_id)
 
-    if user_db:
-        await session.delete(user_db)
-        await session.commit()
-    else:
+    if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
 
+    await session.delete(user_db)
+    await session.commit()
+
+
+@router.post('/user/', response_model=CreateUserDTO)
+async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
+    user_db = await get_and_post_user(session, user.username, user.email, user.password)
+
+    try:
+        await session.commit()
+        return user_db
+    except IntegrityError as e:
+        await session.rollback()
+
+
+@router.put('/user/{user_id}', response_model=CreateUserDTO)
+async def update_user(user_id: int, user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
+    user_db = await get_and_put_user(session, user_id, user.username, user.email, user.password)
+
+    if not user_db:
+        raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
+
+    await session.commit()
+
+
+# @router.put('/user/{user_id}', response_model=CreateUserDTO)
+# async def update_user(user_id: int, user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
+#     user_db = await get_and_put_user(session, user_id, user.username, user.email, user.password)
+#
+#     if not user_db:
+#         raise HTTPException(status_code=404, detail=f'User item with id {user_id} not found')
+#
+#     await session.commit()

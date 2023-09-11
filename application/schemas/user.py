@@ -10,7 +10,6 @@ class DeleteUserDTO(BaseModel):
     id: int
 
 
-
 class CreateUserDTO(UserSchemaDTO):
     password: str
 

@@ -16,7 +16,7 @@ def get_and_post_user(session: AsyncSession, username: str, email: str, password
     return user_db
 
 
-async def get_user_by_id(session: AsyncSession, user_id: int) -> User:
+async def get_user(session: AsyncSession, user_id: int) -> User:
     user = select(User).filter(User.id == user_id)
 
     result = await session.execute(user)
@@ -25,13 +25,15 @@ async def get_user_by_id(session: AsyncSession, user_id: int) -> User:
     return user
 
 
+async def get_and_put_user(session: AsyncSession, user_id: int, username: str, email: str, password: str):
+    user_db = await session.get(User, user_id)
 
+    if not user_db:
+        return None
 
-# def delete_user(id: int, session: Session = Depends(get_session)):
-#     user = session.query(user_models.User).get(id)
-#
-#     if user:
-#         session.delete(user)
-#         session.commit()
-#     else:
-#         raise HTTPException(status_code=404, detail=f'user item wuth id {id} not found')
+    # Update the user's information with the provided data
+    user_db.username = username
+    user_db.email = email
+    user_db.password = password
+
+    return user_db
