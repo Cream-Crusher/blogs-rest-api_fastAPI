@@ -15,7 +15,7 @@ async def read_users(session: AsyncSession = Depends(get_session)):
     users_db = await get_users(session)
 
     if not users_db:
-        raise HTTPException(status_code=400, detail=("Users not found"))
+        raise HTTPException(status_code=400, detail=('Users not found'))
 
     users_db = [
         GetUserDTO(
