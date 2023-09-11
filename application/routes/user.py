@@ -55,7 +55,6 @@ async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_ses
     return user_db
 
 
-
 @router.put('/user/{user_id}', response_model=CreateUserDTO)
 async def update_user(user_id: int, user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
     user_db = await get_and_put_user(session, user_id, user.username, user.email, user.password)
