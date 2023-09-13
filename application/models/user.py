@@ -13,4 +13,4 @@ class User(Base):
     password = Column(String)
     is_active = Column(Boolean, default=True)
 
-    # subscriptions = relationship("Blog", back_populates="user")
+    subscriptions = relationship("Blog", back_populates="user")
