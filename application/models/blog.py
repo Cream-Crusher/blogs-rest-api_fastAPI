@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Column, ForeignKey, Table, DateTime, func
+from sqlalchemy import Integer, String, Column, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 
 from application.database import Base
@@ -14,8 +14,5 @@ class Blog(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    # user_id = Column(Integer, ForeignKey('users.id'))
-    # user = relationship("User", back_populates="blogs")
-
-
-
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    user = relationship("User", back_populates="subscriptions")
