@@ -22,7 +22,7 @@ async def read_users(session: AsyncSession = Depends(get_session)):
             id=user.id,
             username=user.username,
             email=user.email,
-            is_active=user.is_active
+            is_active=user.is_active,
         )
         for user in users_db
     ]
