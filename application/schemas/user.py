@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class UserSchemaDTO(BaseModel):
@@ -17,3 +18,4 @@ class CreateUserDTO(UserSchemaDTO):
 class GetUserDTO(UserSchemaDTO):
     id: int
     is_active: bool
+    subscriptions: Optional[int]

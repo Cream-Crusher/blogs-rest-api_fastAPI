@@ -23,6 +23,7 @@ async def read_users(session: AsyncSession = Depends(get_session)):
             username=user.username,
             email=user.email,
             is_active=user.is_active,
+            subscriptions=len(user.subscriptions) if user.subscriptions else None
         )
         for user in users_db
     ]
@@ -41,7 +42,8 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
         id=user_db.id,
         username=user_db.username,
         email=user_db.email,
-        is_active=user_db.is_active
+        is_active=user_db.is_active,
+        subscriptions=len(user_db.subscriptions) if user_db.subscriptions else None
     )
 
     return user

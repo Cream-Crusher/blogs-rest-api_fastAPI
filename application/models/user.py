@@ -1,5 +1,6 @@
 from sqlalchemy import Integer, String, Column, Boolean
 from sqlalchemy.orm import relationship
+from application.models.blog import Blog  # not del | used
 
 from application.database import Base
 
@@ -13,4 +14,4 @@ class User(Base):
     password = Column(String)
     is_active = Column(Boolean, default=True)
 
-    subscriptions = relationship('Blog', back_populates='user')  # subscriptions
+    subscriptions = relationship('Blog', back_populates='user', lazy='selectin')
