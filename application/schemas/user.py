@@ -15,6 +15,11 @@ class CreateUserDTO(UserSchemaDTO):
     password: str
 
 
+class UpdateUserDTO(UserSchemaDTO):
+    password: str
+    subscriptions: Optional[int]
+
+
 class GetUserDTO(UserSchemaDTO):
     id: int
     is_active: bool

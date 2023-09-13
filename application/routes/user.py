@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
-from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO
+from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO
 from application.service.user import get_and_post_user, get_users, get_user, get_and_put_user
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,8 +57,8 @@ async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_ses
     return user_db
 
 
-@router.put('/user/{user_id}', response_model=CreateUserDTO)
-async def update_user(user_id: int, user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
+@router.put('/user/{user_id}', response_model=UpdateUserDTO)
+async def update_user(user_id: int, user: UpdateUserDTO, session: AsyncSession = Depends(get_session)):
     user_db = await get_and_put_user(session, user_id, user.username, user.email, user.password)
 
     if not user_db:
