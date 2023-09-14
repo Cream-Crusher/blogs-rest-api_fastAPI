@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
 from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO
-from application.services.user_service import get_and_post_user, get_users, get_user, get_and_put_user
+from application.services.user_service import get_and_create_user, get_users, get_user, get_and_update_user
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,7 +50,7 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
 
 @router.post('/user/', response_model=CreateUserDTO)
 async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
-    user_db = get_and_post_user(session, user.username, user.email, user.password)
+    user_db = get_and_create_user(session, user.username, user.email, user.password)
 
     await session.commit()
     return user_db
@@ -58,7 +58,7 @@ async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_ses
 
 @router.put('/user/{user_id}', response_model=UpdateUserDTO)
 async def update_user(user_id: int, user: UpdateUserDTO, session: AsyncSession = Depends(get_session)):
-    user_db = await get_and_put_user(session, user_id, user.username, user.email, user.password)
+    user_db = await get_and_update_user(session, user_id, user.username, user.email, user.password)
 
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')

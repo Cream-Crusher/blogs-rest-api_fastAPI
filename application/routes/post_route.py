@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.database import get_session
 from application.schemas.post_schems import CreatePostDTO, UpdatePostDTO, GetPostDTO, GetPostsDTO, DeletePostDTO
-from application.services.post_services import get_and_post_post, get_and_put_blog, get_post, get_posts
+from application.services.post_services import get_and_create_post, get_and_update_blog, get_post, get_posts
 
 router = APIRouter()
 
@@ -52,7 +52,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
 
 @router.post('/post/', response_model=CreatePostDTO)
 async def post_blog(post: CreatePostDTO, session: AsyncSession = Depends(get_session)):
-    post_db = get_and_post_post(session, post.title, post.body, post.is_published)
+    post_db = get_and_create_post(session, post.title, post.body, post.is_published)
     print(post_db.body)
     await session.commit()
     print(post_db.body)
@@ -62,7 +62,7 @@ async def post_blog(post: CreatePostDTO, session: AsyncSession = Depends(get_ses
 
 @router.put('/post/{post_id}', response_model=UpdatePostDTO)
 async def update_blog(post_id: int, post: UpdatePostDTO, session: AsyncSession = Depends(get_session)):
-    post_db = await get_and_put_blog(session, post_id, post.title, post.body, post.is_published)
+    post_db = await get_and_update_blog(session, post_id, post.title, post.body, post.is_published)
 
     if not post_db:
         raise HTTPException(status_code=404, detail=f'blog item wuth id {post_id} not found')

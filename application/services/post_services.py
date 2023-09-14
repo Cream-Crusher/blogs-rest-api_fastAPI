@@ -17,7 +17,7 @@ async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
     return posts_db
 
 
-def get_and_post_post(session: AsyncSession, title: str, body: str, is_published: bool) -> Post:
+def get_and_create_post(session: AsyncSession, title: str, body: str, is_published: bool) -> Post:
     post_db = Post(title=title, body=body, is_published=is_published)
     session.add(post_db)
 
@@ -33,7 +33,7 @@ async def get_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
     return post_db
 
 
-async def get_and_put_blog(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool) -> \
+async def get_and_update_blog(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool) -> \
         (Type[Post] | None):
 
     post_db = await session.get(Post, post_id)
