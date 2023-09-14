@@ -1,9 +1,9 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
-class BlogSchemaDTO(BaseModel):
+class BlogBaseDTO(BaseModel):
     title: str
     description: str
 
@@ -12,15 +12,23 @@ class DeleteBlogDTO(BaseModel):
     id: int
 
 
-class CreateBlogDTO(BlogSchemaDTO):
+class CreateBlogDTO(BlogBaseDTO):
     pass
 
 
-class UpdateBlogDTO(BlogSchemaDTO):
+class UpdateBlogDTO(BlogBaseDTO):
     pass
 
 
-class GetBLogDTO(BlogSchemaDTO):
+class GetBLogsDTO(BlogBaseDTO):
     id: int
     created_at: datetime
     updated_at: Optional[datetime]
+
+
+class GetBLogDTO(BlogBaseDTO):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime]
+    subscribed_users: Optional[List[int]]
+

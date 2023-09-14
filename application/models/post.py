@@ -10,7 +10,7 @@ class Post(Base):
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
 
     title = Column(String(50), index=True)
-    body = Column(String),
+    body = Column(String)
     is_published = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     views = Column(Integer, default=0)

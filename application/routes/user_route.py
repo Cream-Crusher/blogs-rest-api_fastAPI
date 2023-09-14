@@ -1,8 +1,8 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
-from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO
-from application.service.user import get_and_post_user, get_users, get_user, get_and_put_user
+from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO
+from application.services.user_service import get_and_post_user, get_users, get_user, get_and_put_user
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.get('/users/', response_model=list[GetUserDTO])
+@router.get('/users/', response_model=list[GetUsersDTO])
 async def read_users(session: AsyncSession = Depends(get_session)):
     users_db = await get_users(session)
 
@@ -18,12 +18,11 @@ async def read_users(session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=400, detail=('Users not found'))
 
     users_db = [
-        GetUserDTO(
+        GetUsersDTO(
             id=user.id,
             username=user.username,
             email=user.email,
             is_active=user.is_active,
-            subscriptions=len(user.subscriptions) if user.subscriptions else None
         )
         for user in users_db
     ]
@@ -43,7 +42,7 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
         username=user_db.username,
         email=user_db.email,
         is_active=user_db.is_active,
-        subscriptions=len(user_db.subscriptions) if user_db.subscriptions else None
+        blogs_subscriptions=user_db.blogs_subscriptions
     )
 
     return user

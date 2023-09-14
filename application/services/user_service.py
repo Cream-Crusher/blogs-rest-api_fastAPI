@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from application.models.user import User
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+from application.models.user import User
 
 from typing import Sequence, Type
 
@@ -23,7 +25,12 @@ def get_and_post_user(session: AsyncSession, username: str, email: str, password
 
 
 async def get_user(session: AsyncSession, user_id: int) -> Type[User] | None:
-    user_db = await session.get(User, user_id)
+    user_db = await session.execute(
+        select(User)
+        .where(User.id == user_id)
+        .options(selectinload(User.blogs_subscriptions))
+    )
+    user_db = user_db.scalar_one()
 
     if not user_db:
         return None

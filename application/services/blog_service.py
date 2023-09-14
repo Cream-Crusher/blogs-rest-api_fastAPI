@@ -1,6 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.models.blog import Blog
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+from application.models.blog import Blog
 
 from typing import Sequence, Type
 
@@ -23,7 +26,12 @@ def get_and_post_blog(session: AsyncSession, title: str, description: str) -> Bl
 
 
 async def get_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
-    blog_db = await session.get(Blog, blog_id)
+    blog_db = await session.execute(
+        select(Blog)
+        .where(Blog.id == blog_id)
+        .options(selectinload(Blog.subscribed_users))
+    )
+    blog_db = blog_db.scalar_one()
 
     if not blog_db:
         return None
