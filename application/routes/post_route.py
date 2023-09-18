@@ -8,7 +8,7 @@ from application.services.post_services import get_and_create_post, get_and_upda
 router = APIRouter()
 
 
-@router.get('/posts/', response_model=list[GetPostsDTO])
+@router.get('/posts/', response_model=list[GetPostsDTO], tags=['Post'])
 async def read_posts(session: AsyncSession = Depends(get_session)):
     posts_db = await get_posts(session)
 
@@ -31,7 +31,7 @@ async def read_posts(session: AsyncSession = Depends(get_session)):
     return posts_db
 
 
-@router.get('/post/{post_id}', response_model=GetPostDTO)
+@router.get('/post/{post_id}', response_model=GetPostDTO, tags=['Post'])
 async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
     post = await get_post(session, post_id)
 
@@ -50,7 +50,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
     return post
 
 
-@router.post('/post/', response_model=CreatePostDTO)
+@router.post('/post/', response_model=CreatePostDTO, tags=['Post'])
 async def post_blog(post: CreatePostDTO, session: AsyncSession = Depends(get_session)):
     post_db = get_and_create_post(session, post.title, post.body, post.is_published)
     print(post_db.body)
@@ -60,7 +60,7 @@ async def post_blog(post: CreatePostDTO, session: AsyncSession = Depends(get_ses
     return post_db
 
 
-@router.put('/post/{post_id}', response_model=UpdatePostDTO)
+@router.put('/post/{post_id}', response_model=UpdatePostDTO, tags=['Post'])
 async def update_blog(post_id: int, post: UpdatePostDTO, session: AsyncSession = Depends(get_session)):
     post_db = await get_and_update_blog(session, post_id, post.title, post.body, post.is_published)
 
@@ -71,7 +71,7 @@ async def update_blog(post_id: int, post: UpdatePostDTO, session: AsyncSession =
     return post_db
 
 
-@router.delete('/post/{post_id}', response_model=DeletePostDTO)
+@router.delete('/post/{post_id}', response_model=DeletePostDTO, tags=['Post'])
 async def delete_blog(post_id: int, session: AsyncSession = Depends(get_session)):
     post_db = await get_post(session, post_id)
 

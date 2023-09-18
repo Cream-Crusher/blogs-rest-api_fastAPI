@@ -8,7 +8,7 @@ from application.services.blog_service import get_blog, get_and_create_blog, get
 router = APIRouter()
 
 
-@router.get('/blogs/', response_model=list[GetBLogsDTO])
+@router.get('/blogs/', response_model=list[GetBLogsDTO], tags=['Blog'])
 async def read_blogs(session: AsyncSession = Depends(get_session)):
     blogs_db = await get_blogs(session)
 
@@ -29,7 +29,7 @@ async def read_blogs(session: AsyncSession = Depends(get_session)):
     return blogs_db
 
 
-@router.get('/blog/{blog_id}', response_model=GetBLogDTO)
+@router.get('/blog/{blog_id}', response_model=GetBLogDTO, tags=['Blog'])
 async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
     blog = await get_blog(session, blog_id)
 
@@ -48,7 +48,7 @@ async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
     return blog
 
 
-@router.post('/blog/', response_model=CreateBlogDTO)
+@router.post('/blog/', response_model=CreateBlogDTO, tags=['Blog'])
 async def post_blog(blog: CreateBlogDTO, session: AsyncSession = Depends(get_session)):
     blog_db = get_and_create_blog(session, blog.title, blog.description)
 
@@ -56,7 +56,7 @@ async def post_blog(blog: CreateBlogDTO, session: AsyncSession = Depends(get_ses
     return blog_db
 
 
-@router.put('/blog/{blog_id}', response_model=UpdateBlogDTO)
+@router.put('/blog/{blog_id}', response_model=UpdateBlogDTO, tags=['Blog'])
 async def update_blog(blog_id: int, blog: UpdateBlogDTO, session: AsyncSession = Depends(get_session)):
     blog_db = await get_and_update_blog(session, blog_id, blog.title, blog.description)
 
@@ -67,7 +67,7 @@ async def update_blog(blog_id: int, blog: UpdateBlogDTO, session: AsyncSession =
     return blog_db
 
 
-@router.delete('/blog/{blog_id}', response_model=DeleteBlogDTO)
+@router.delete('/blog/{blog_id}', response_model=DeleteBlogDTO, tags=['Blog'])
 async def delete_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
     blog_db = await get_blog(session, blog_id)
 
