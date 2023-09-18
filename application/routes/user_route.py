@@ -37,20 +37,17 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')
 
-    user = GetUserDTO(
-        id=user_db.id,
-        username=user_db.username,
-        email=user_db.email,
-        is_active=user_db.is_active,
-        blogs_subscriptions=user_db.blogs_subscriptions
-    )
+    print(user_db.blogs_subscriptions)
+    print('|'*40)
+
+    user = GetUserDTO(**user_db.__dict__)
 
     return user
 
 
 @router.post('/user/', response_model=CreateUserDTO, tags=['User'])
 async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
-    user_db = get_and_create_user(session, user.username, user.email, user.password)
+    user_db = await get_and_create_user(session, user.username, user.email, user.password)
 
     await session.commit()
     return user_db

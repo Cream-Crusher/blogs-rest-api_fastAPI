@@ -19,7 +19,7 @@ class CreateUserDTO(UserSchemaDTO):
 
 class UpdateUserDTO(UserSchemaDTO):
     password: str
-    blogs_subscriptions: Optional[Any]
+    blogs_subscriptions: Optional[List[int]]
 
 
 class GetUserDTO(UserSchemaDTO):
