@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.get('/users/', response_model=list[GetUsersDTO], tags=['Tag'])
+@router.get('/users/', response_model=list[GetUsersDTO], tags=['User'])
 async def read_users(session: AsyncSession = Depends(get_session)):
     users_db = await get_users(session)
 
@@ -30,7 +30,7 @@ async def read_users(session: AsyncSession = Depends(get_session)):
     return users_db
 
 
-@router.get('/user/{user_id}', response_model=GetUserDTO, tags=['Tag'])
+@router.get('/user/{user_id}', response_model=GetUserDTO, tags=['User'])
 async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     user_db = await get_user(session, user_id)
 
@@ -48,7 +48,7 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     return user
 
 
-@router.post('/user/', response_model=CreateUserDTO, tags=['Tag'])
+@router.post('/user/', response_model=CreateUserDTO, tags=['User'])
 async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_session)):
     user_db = get_and_create_user(session, user.username, user.email, user.password)
 
@@ -56,9 +56,9 @@ async def post_user(user: CreateUserDTO, session: AsyncSession = Depends(get_ses
     return user_db
 
 
-@router.put('/user/{user_id}', response_model=UpdateUserDTO, tags=['Tag'])
+@router.put('/user/{user_id}', response_model=UpdateUserDTO, tags=['User'])
 async def update_user(user_id: int, user: UpdateUserDTO, session: AsyncSession = Depends(get_session)):
-    user_db = await get_and_update_user(session, user_id, user.username, user.email, user.password)
+    user_db = await get_and_update_user(session, user_id, user.username, user.email, user.password, user.blogs_subscriptions)
 
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')
@@ -67,7 +67,7 @@ async def update_user(user_id: int, user: UpdateUserDTO, session: AsyncSession =
     return user_db
 
 
-@router.delete('/user/{user_id}', response_model=DeleteUserDTO, tags=['Tag'])
+@router.delete('/user/{user_id}', response_model=DeleteUserDTO, tags=['User'])
 async def delete_user(user_id: int, session: AsyncSession = Depends(get_session)):
     user_db = await get_user(session, user_id)
 

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any
+
+from application.models.blog import Blog
 
 
 class UserSchemaDTO(BaseModel):
@@ -17,7 +19,7 @@ class CreateUserDTO(UserSchemaDTO):
 
 class UpdateUserDTO(UserSchemaDTO):
     password: str
-    blogs_subscriptions: Optional[int]
+    blogs_subscriptions: Optional[Any]
 
 
 class GetUserDTO(UserSchemaDTO):
