@@ -56,7 +56,6 @@ async def get_and_update_user(session: AsyncSession, user_id: int, username: str
 
     for blog_id in blogs_subscriptions:
         blog_db = await session.get(Blog, blog_id)
-
-    user_db.blogs_subscriptions.append(blog_db)
+        user_db.blogs_subscriptions.append(blog_db)  # TODO игнорировать ResponseValidationError. Все работате!!!
 
     return user_db

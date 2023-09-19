@@ -37,9 +37,6 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')
 
-    print(user_db.blogs_subscriptions)
-    print('|'*40)
-
     user = GetUserDTO(**user_db.__dict__)
 
     return user
