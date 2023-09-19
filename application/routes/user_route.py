@@ -1,6 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
+from application.schemas.blog import GetBlogsSubscriptions
 from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO
 from application.services.user_service import get_and_create_user, get_users, get_user, get_and_update_user
 
@@ -37,7 +38,15 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
     if not user_db:
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')
 
-    user = GetUserDTO(**user_db.__dict__)
+    blogs_subscriptions = [GetBlogsSubscriptions(id=sub.id, title=sub.title) for sub in user_db.blogs_subscriptions]
+
+    user = GetUserDTO(
+        id=user_db.id,
+        username=user_db.username,
+        email=user_db.email,
+        is_active=user_db.is_active,
+        blogs_subscriptions=blogs_subscriptions
+    )
 
     return user
 

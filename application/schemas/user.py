@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional, List, Any
-
-from application.models.blog import Blog
+from typing import Optional, List
+from application.schemas.blog import GetBlogsSubscriptions
 
 
 class UserSchemaDTO(BaseModel):
@@ -25,7 +24,7 @@ class UpdateUserDTO(UserSchemaDTO):
 class GetUserDTO(UserSchemaDTO):
     id: int
     is_active: bool
-    blogs_subscriptions: Optional[List[int]]
+    blogs_subscriptions: List[GetBlogsSubscriptions] = None
 
 
 class GetUsersDTO(UserSchemaDTO):

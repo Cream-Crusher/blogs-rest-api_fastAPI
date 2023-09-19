@@ -32,3 +32,7 @@ class GetBLogDTO(BlogBaseDTO):
     updated_at: Optional[datetime]
     subscribed_users: Optional[List[int]]
 
+
+class GetBlogsSubscriptions(BaseModel):
+    id: int
+    title: str
