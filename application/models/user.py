@@ -4,7 +4,7 @@ from sqlalchemy import String, Column, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from application.database import Base
-from application.models.associations import user_blogs_subscriptions
+from application.models.associations import user_blogs_subscriptions, user_blogs_authors, users_post_likes
 
 
 class User(Base):
@@ -19,4 +19,10 @@ class User(Base):
 
     blogs_subscriptions: Mapped[List['Blog']] = relationship(
         secondary=user_blogs_subscriptions, back_populates='subscribed_users'
+    )
+    blogs_authors: Mapped[List['BLog']] = relationship(
+        secondary=user_blogs_authors, back_populates='authors'
+    )
+    post_likes: Mapped[List['Post']] = relationship(
+        secondary=users_post_likes, back_populates='likes'
     )

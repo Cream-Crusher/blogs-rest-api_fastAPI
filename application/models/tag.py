@@ -1,10 +1,12 @@
 from sqlalchemy import Column, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from application.database import Base
 
 
-class tag(Base):
+class Tag(Base):
     __tablename__ = 'tags'
 
-    id = Column(String, autoincrement=True, primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+
     tag_name = Column(String(20), unique=True)

@@ -53,6 +53,7 @@ async def get_and_update_user(session: AsyncSession, user_id: int, username: str
     user_db.username = username
     user_db.email = email
     user_db.password = password
+    user_db.blogs_subscriptions = []
 
     for blog_id in blogs_subscriptions:
         blog_db = await session.get(Blog, blog_id)
