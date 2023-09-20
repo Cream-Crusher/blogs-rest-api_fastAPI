@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.database import get_session
-from application.schemas.blog import GetBLogDTO, DeleteBlogDTO, CreateBlogDTO, UpdateBlogDTO, GetBLogsDTO
+from application.schemas.blog import GetBLogDTO, DeleteBlogDTO, CreateBlogDTO, UpdateBlogDTO, GetBLogsDTO, GetBlogSubscribedUsersDTO
 from application.services.blog_service import get_blog, get_and_create_blog, get_and_update_blog, get_blogs
 
 router = APIRouter()
@@ -36,13 +36,15 @@ async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
     if not blog:
         raise HTTPException(status_code=404, detail=f'blog item wuth id {blog_id} not found')
 
+    blogs_subscriptions = [GetBlogSubscribedUsersDTO(id=sub.id, username=sub.username) for sub in blog.subscribed_users]
+
     blog = GetBLogDTO(
         id=blog.id,
         title=blog.title,
         description=blog.description,
         created_at=blog.created_at,
         updated_at=blog.updated_at,
-        subscribed_users=blog.subscribed_users
+        subscribed_users=blogs_subscriptions
     )
 
     return blog

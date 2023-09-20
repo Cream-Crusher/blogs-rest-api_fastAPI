@@ -21,7 +21,7 @@ async def get_users(session: AsyncSession) -> Sequence[User] | None:
     return users_db
 
 
-def get_and_create_user(session: AsyncSession, username: str, email: str, password: str) -> User:
+async def get_and_create_user(session: AsyncSession, username: str, email: str, password: str) -> User:
     user_db = User(username=username, email=email, password=password)
     session.add(user_db)
 

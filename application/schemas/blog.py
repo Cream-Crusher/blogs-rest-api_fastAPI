@@ -26,13 +26,13 @@ class GetBLogsDTO(BlogBaseDTO):
     updated_at: Optional[datetime]
 
 
+class GetBlogSubscribedUsersDTO(BaseModel):
+    id: int
+    username: str
+
+
 class GetBLogDTO(BlogBaseDTO):
     id: int
     created_at: datetime
     updated_at: Optional[datetime]
-    subscribed_users: Optional[List[int]]
-
-
-class GetBlogsSubscriptions(BaseModel):
-    id: int
-    title: str
+    subscribed_users: Optional[List[GetBlogSubscribedUsersDTO]] = None
