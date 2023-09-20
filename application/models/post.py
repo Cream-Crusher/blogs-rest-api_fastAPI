@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from application.database import Base
