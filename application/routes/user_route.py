@@ -1,7 +1,8 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
-from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO, GetBlogsSubscriptionsDTO
+from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO, \
+    GetBlogsSubscriptionsDTO, GetBlogsAuthorsDTO, GetPostLikesDTO
 from application.services.user_service import get_and_create_user, get_users, get_user, get_and_update_user
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,13 +39,17 @@ async def read_user(user_id: int, session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=404, detail=f'user item wuth id {user_id} not found')
 
     blogs_subscriptions = [GetBlogsSubscriptionsDTO(id=sub.id, title=sub.title) for sub in user_db.blogs_subscriptions]
+    blogs_authors = [GetBlogsAuthorsDTO(id=author.id, title=author.title) for author in user_db.blogs_authors]
+    post_likes = [GetPostLikesDTO(id=post_like.id, title=post_like.title) for post_like in user_db.post_likes]
 
     user = GetUserDTO(
         id=user_db.id,
         username=user_db.username,
         email=user_db.email,
         is_active=user_db.is_active,
-        blogs_subscriptions=blogs_subscriptions
+        blogs_subscriptions=blogs_subscriptions,
+        blogs_authors=blogs_authors,
+        post_likes=post_likes
     )
 
     return user

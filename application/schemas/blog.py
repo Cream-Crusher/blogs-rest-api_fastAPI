@@ -12,12 +12,30 @@ class DeleteBlogDTO(BaseModel):
     id: int
 
 
+class GetBlogUsersDTO(BaseModel):
+    id: int
+    username: str
+
+
+class GetBlogAuthorsDTO(BaseModel):
+    id: int
+
+
+class GetBLogOwnerDTO(BaseModel):
+    id: int
+
+
+class GetPostDTO(BaseModel):
+    id: int = None
+
+
 class CreateBlogDTO(BlogBaseDTO):
-    pass
+    owner_id: List[GetBLogOwnerDTO] = None
 
 
 class UpdateBlogDTO(BlogBaseDTO):
-    pass
+    authors: List[GetBlogAuthorsDTO] = None
+    post_id: List[GetPostDTO] = None
 
 
 class GetBLogsDTO(BlogBaseDTO):
@@ -26,13 +44,11 @@ class GetBLogsDTO(BlogBaseDTO):
     updated_at: Optional[datetime]
 
 
-class GetBlogSubscribedUsersDTO(BaseModel):
-    id: int
-    username: str
-
-
 class GetBLogDTO(BlogBaseDTO):
     id: int
     created_at: datetime
     updated_at: Optional[datetime]
-    subscribed_users: Optional[List[GetBlogSubscribedUsersDTO]] = None
+    subscribed_users: Optional[List[GetBlogUsersDTO]] = None
+    authors: Optional[List[GetBlogUsersDTO]] = None
+    owner: List[GetBLogOwnerDTO] = None
+    posts: Optional[List[GetPostDTO]] = None

@@ -1,14 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, Result
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.orm.interfaces import MapperOption
 
-from application.models.blog import Blog
+from application.models.post import Post
 from application.models.user import User
 
-from typing import Sequence, Type, List, Tuple
-
-from application.schemas.blog import GetBLogsDTO
+from typing import Sequence, Type, List
 
 
 async def get_users(session: AsyncSession) -> Sequence[User] | None:
@@ -32,7 +29,9 @@ async def get_user(session: AsyncSession, user_id: int) -> User | None:
     user_db = await session.execute(
         select(User)
         .where(User.id == user_id)
-        .options(selectinload(User.blogs_subscriptions))
+        .options(selectinload(User.blogs_subscriptions),
+                 selectinload(User.blogs_authors),
+                 selectinload(User.post_likes))
     )
     user_db = user_db.scalar()
 
@@ -42,10 +41,14 @@ async def get_user(session: AsyncSession, user_id: int) -> User | None:
     return user_db
 
 
-async def get_and_update_user(session: AsyncSession, user_id: int, username: str, email: str, password: str, blogs_subscriptions: List[any] = None) -> \
+async def get_and_update_user(session: AsyncSession, user_id: int, username: str, email: str, password: str, blogs_subscriptions: List[any] = None, blogs_authors: List[any] = None, post_likes: List[any] = None) -> \
         Type[User] | None:
 
-    user_db = await session.get(User, user_id, options=[selectinload(User.blogs_subscriptions)])
+    user_db = await session.get(User, user_id, options=[
+            selectinload(User.blogs_subscriptions),
+            selectinload(User.blogs_authors),
+            selectinload(User.post_likes)
+        ])
 
     if not user_db:
         return None
@@ -54,9 +57,18 @@ async def get_and_update_user(session: AsyncSession, user_id: int, username: str
     user_db.email = email
     user_db.password = password
     user_db.blogs_subscriptions = []
+    user_db.post_likes = []
+    user_db.blogs_authors = []
 
-    for blog_id in blogs_subscriptions:
-        blog_db = await session.get(Blog, blog_id)
-        user_db.blogs_subscriptions.append(blog_db)  # TODO игнорировать ResponseValidationError. Все работате!!!
+    await load_associated_property(blogs_subscriptions, session, user_db, 'blogs_subscriptions')
+    await load_associated_property(blogs_authors, session, user_db, 'blogs_authors')
+    await load_associated_property(post_likes, session, user_db, 'post_likes')
 
     return user_db
+
+
+async def load_associated_property(property_name, session, model, column_db: str):
+    if property_name:
+        for obg_id in property_name:
+            obj_db = await session.get(Post, obg_id)
+            getattr(model, column_db).append(obj_db)

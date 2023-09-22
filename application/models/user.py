@@ -20,7 +20,7 @@ class User(Base):
     blogs_subscriptions: Mapped[List['Blog']] = relationship(
         secondary=user_blogs_subscriptions, back_populates='subscribed_users'
     )
-    blogs_authors: Mapped[List['BLog']] = relationship(
+    blogs_authors: Mapped[List['Blog']] = relationship(
         secondary=user_blogs_authors, back_populates='authors'
     )
     post_likes: Mapped[List['Post']] = relationship(

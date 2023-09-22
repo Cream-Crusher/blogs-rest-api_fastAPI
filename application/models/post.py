@@ -18,12 +18,12 @@ class Post(Base):
     created_at = Column(DateTime, server_default=func.now())
     views = Column(Integer, default=0)
 
-    tags: Mapped[List['Tag']] = relationship(
-        secondary=post_tags
-    )
     likes: Mapped[List['User']] = relationship(
         secondary=users_post_likes, back_populates='post_likes'
     )
+    # tags: Mapped[List['Tag']] = relationship(
+    #     secondary=post_tags
+    # )
 
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User')
