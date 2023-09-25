@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from application.database import get_session
 from application.models.blog import Blog
 from application.models.user import User
-from application.schemas.blog import GetBLogDTO, DeleteBlogDTO, CreateBlogDTO, UpdateBlogDTO, GetBLogsDTO, \
+from application.schemas.blog_schems import GetBLogDTO, DeleteBlogDTO, CreateBlogDTO, UpdateBlogDTO, GetBLogsDTO, \
     GetBlogUsersDTO, GetBLogOwnerDTO, GetPostDTO
 from application.services.blog_service import get_blog, get_and_create_blog, get_and_update_blog, get_blogs
 

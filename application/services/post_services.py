@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from application.models.post import Post
 
-from typing import Sequence, Type
+from typing import Sequence, Type, List
 
 
 async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
@@ -17,8 +17,8 @@ async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
     return posts_db
 
 
-def get_and_create_post(session: AsyncSession, title: str, body: str, is_published: bool) -> Post:
-    post_db = Post(title=title, body=body, is_published=is_published)
+async def get_and_create_post(session: AsyncSession, title: str, body: str, is_published: bool, user_db: any) -> Post:
+    post_db = Post(title=title, body=body, is_published=is_published, author_id=user_db.id)
     session.add(post_db)
 
     return post_db

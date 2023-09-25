@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from application.database import get_session
-from application.schemas.user import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO, \
+from application.schemas.user_schems import GetUserDTO, CreateUserDTO, DeleteUserDTO, UpdateUserDTO, GetUsersDTO, \
     GetBlogsSubscriptionsDTO, GetBlogsAuthorsDTO, GetPostLikesDTO
 from application.services.user_service import get_and_create_user, get_users, get_user, get_and_update_user
 

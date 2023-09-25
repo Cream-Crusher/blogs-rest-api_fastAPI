@@ -22,7 +22,7 @@ class Post(Base):
         secondary=users_post_likes, back_populates='post_likes'
     )
     # tags: Mapped[List['Tag']] = relationship(
-    #     secondary=post_tags
+    #     secondary='association_table_tags'
     # )
 
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
