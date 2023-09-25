@@ -39,7 +39,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
     post = await session.get(Post, post_id)
 
     if not post:
-        raise HTTPException(status_code=404, detail=f'blog item wuth id {post_id} not found')
+        raise HTTPException(status_code=404, detail=f'post item wuth id {post_id} not found')
 
     author = GetBLogAuthorDTO(id=post.author_id)
 
@@ -57,7 +57,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
 
 
 @router.post('/post/', response_model=CreatePostDTO, tags=['Post'])
-async def post_blog(post: CreatePostDTO, session: AsyncSession = Depends(get_session)):
+async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_session)):
     user_db = await session.get(User, post.author_id[0].id)
 
     if not user_db:

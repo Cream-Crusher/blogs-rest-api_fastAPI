@@ -4,14 +4,14 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class GetBLogAuthorDTO(BaseModel):
-    id: int
-
-
 class PostBaseDTO(BaseModel):
     title: str
     body: str
     is_published: bool
+
+
+class GetBLogAuthorDTO(BaseModel):
+    id: int
 
 
 class DeletePostDTO(BaseModel):

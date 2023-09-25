@@ -1,10 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 
 from application.models.post import Post
 
-from typing import Sequence, Type, List
+from typing import Sequence, Type
 
 
 async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
