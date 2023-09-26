@@ -6,7 +6,7 @@ from application.models.post import Post
 from application.models.user import User
 from application.schemas.post_schems import CreatePostDTO, UpdatePostDTO, GetPostDTO, GetPostsDTO, DeletePostDTO, \
     GetBLogAuthorDTO
-from application.services.post_services import get_and_create_post, get_and_update_blog, get_post, get_posts
+from application.services.post_services import get_and_create_post, get_and_update_post, get_post, get_posts
 
 router = APIRouter()
 
@@ -74,7 +74,7 @@ async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_s
 
 @router.put('/post/{post_id}', response_model=UpdatePostDTO, tags=['Post'])
 async def update_blog(post_id: int, post: UpdatePostDTO, session: AsyncSession = Depends(get_session)):
-    post_db = await get_and_update_blog(session, post_id, post.title, post.body, post.is_published)
+    post_db = await get_and_update_post(session, post_id, post.title, post.body, post.is_published)
 
     if not post_db:
         raise HTTPException(status_code=404, detail=f'blog item wuth id {post_id} not found')

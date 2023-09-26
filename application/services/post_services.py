@@ -32,7 +32,7 @@ async def get_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
     return post_db
 
 
-async def get_and_update_blog(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool) -> \
+async def get_and_update_post(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool) -> \
         (Type[Post] | None):
 
     post_db = await session.get(Post, post_id)
