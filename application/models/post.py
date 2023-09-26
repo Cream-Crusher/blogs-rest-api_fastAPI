@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Foreign
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from application.database import Base
-from application.models.associations import post_tags, users_post_likes
+from application.models.associations import users_post_likes
 
 
 class Post(Base):

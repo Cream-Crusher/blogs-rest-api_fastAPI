@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel
 
@@ -12,6 +11,7 @@ class PostBaseDTO(BaseModel):
 
 class GetBLogAuthorDTO(BaseModel):
     id: int
+    username: str
 
 
 class DeletePostDTO(BaseModel):
@@ -19,7 +19,7 @@ class DeletePostDTO(BaseModel):
 
 
 class CreatePostDTO(PostBaseDTO):
-    author_id: List[GetBLogAuthorDTO] = None
+    author_id: int
 
 
 class UpdatePostDTO(PostBaseDTO):
@@ -36,4 +36,4 @@ class GetPostDTO(PostBaseDTO):
     id: int
     created_at: datetime
     views: int
-    author: List[GetBLogAuthorDTO] = None
+    author: GetBLogAuthorDTO
