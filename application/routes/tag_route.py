@@ -1,15 +1,10 @@
 from fastapi import Depends, APIRouter, HTTPException
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from application.database import get_session
-from application.models.post import Post
 from application.models.tag import Tag
-from application.models.user import User
-from application.schemas.post_schems import CreatePostDTO, UpdatePostDTO, GetPostDTO, GetPostsDTO, DeletePostDTO, \
-    GetBLogAuthorDTO
 from application.schemas.tag_schems import GetTagsDTO, CreateTagDTO, GetTagDTO, UpdateTagDTO, DeleteTagDTO
-from application.services.post_services import get_and_create_post, get_and_update_blog, get_post, get_posts
 from application.services.tag_services import get_tags, get_and_create_tag, get_and_update_tag, get_tag
 
 router = APIRouter()
