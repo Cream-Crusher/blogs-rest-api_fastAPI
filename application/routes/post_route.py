@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.database import get_session
 from application.schemas.post_schems import CreatePostDTO, UpdatePostDTO, GetPostDTO, GetPostsDTO, DeletePostDTO, \
-    GetBLogAuthorDTO
+    GetPostAuthorDTO, GetBlogDTO
 from application.services.post_services import get_and_create_post, get_and_update_post, get_post, get_posts, \
     get_and_delete_post
 
@@ -25,7 +25,8 @@ async def read_posts(session: AsyncSession = Depends(get_session)):
             body=post.body,
             is_published=post.is_published,
             created_at=post.created_at,
-            views=post.views
+            views=post.views,
+            blog_id=post.blog_id
         )
         for post in posts
     ]
@@ -40,7 +41,8 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
     if not post:
         raise HTTPException(status_code=404, detail=f'post item wuth id {post_id} not found')
 
-    author = GetBLogAuthorDTO(id=post.author.id, username=post.author.username)
+    author = GetPostAuthorDTO(id=post.author.id, username=post.author.username)
+    blog = GetBlogDTO(id=post.blog.id, title=post.blog.title)
 
     post = GetPostDTO(
         id=post.id,
@@ -49,7 +51,8 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
         is_published=post.is_published,
         created_at=post.created_at,
         views=post.views,
-        author=author
+        author=author,
+        blog=blog
     )
 
     return post
@@ -57,7 +60,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
 
 @router.post('/post/', response_model=CreatePostDTO, tags=['Post'])
 async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_session)):
-    post = await get_and_create_post(session, post.title, post.body, post.is_published, post.author_id)
+    post = await get_and_create_post(session, post.title, post.body, post.is_published, post.author_id, post.blog_id)
 
     if not post:
         raise HTTPException(status_code=404, detail="User not found")
@@ -68,7 +71,8 @@ async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_s
         title=post.title,
         body=post.body,
         is_published=post.is_published,
-        author_id=post.author_id
+        author_id=post.author_id,
+        blog_id=post.blog_id
     )
 
     return post

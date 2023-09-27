@@ -18,13 +18,13 @@ async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
     return posts
 
 
-async def get_and_create_post(session: AsyncSession, title: str, body: str, is_published: bool, author_id: any) -> Post | None:
+async def get_and_create_post(session: AsyncSession, title: str, body: str, is_published: bool, author_id: any, blog_id: int) -> Post | None:
     user = await session.get(User, author_id)
 
     if not user:
         return None
 
-    post = Post(title=title, body=body, is_published=is_published, author_id=user.id)
+    post = Post(title=title, body=body, is_published=is_published, author_id=user.id, blog_id=blog_id)
     session.add(post)
 
     return post
@@ -32,7 +32,8 @@ async def get_and_create_post(session: AsyncSession, title: str, body: str, is_p
 
 async def get_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
     post = await session.get(Post, post_id, options=[
-            selectinload(Post.author)
+            selectinload(Post.author),
+            selectinload(Post.blog)
     ])
 
     if not post:

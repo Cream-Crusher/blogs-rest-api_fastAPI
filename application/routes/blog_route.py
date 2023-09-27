@@ -46,7 +46,7 @@ async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
 
     blogs_subscriptions = [GetBlogUsersDTO(id=sub.id, username=sub.username) for sub in blog.subscribed_users]
     authors = [GetBlogUsersDTO(id=author.id, username=author.username) for author in blog.authors]
-    posts = (id=blog.post_id) if blog.post_id else None
+    #posts = (id=blog.posts.id) if blog.post_id else None
 
     blog = GetBLogDTO(
         id=blog.id,
