@@ -9,7 +9,10 @@ from typing import Sequence, Type, List
 
 
 async def get_blogs(session: AsyncSession) -> Sequence[Blog] | None:
-    blogs_db = await session.execute(select(Blog))
+    blogs_db = await session.execute(
+        select(Blog)
+        .options(selectinload(Blog.posts))
+    )
     blogs_db = blogs_db.scalars().all()
 
     if not blogs_db:
@@ -18,29 +21,32 @@ async def get_blogs(session: AsyncSession) -> Sequence[Blog] | None:
     return blogs_db
 
 
-async def get_and_create_blog(session: AsyncSession, title: str, description: str, user_db: any) -> Blog:
-    blog_db = Blog(title=title, description=description, owner_id=user_db.id)
-    session.add(blog_db)
+async def get_and_create_blog(session: AsyncSession, title: str, description: str, owner_id: any) -> Blog | None:
+    user = await session.get(User, owner_id)
 
-    return blog_db
-
-
-async def get_blog(session: AsyncSession, blog_id: int) -> Blog | None:
-    blog_db = await session.execute(
-        select(Blog)
-        .where(Blog.id == blog_id)
-        .options(selectinload(Blog.subscribed_users))
-    )
-    blog_db = blog_db.scalar_one()
-
-    if not blog_db:
+    if not user:
         return None
 
-    return blog_db
+    blog = Blog(title=title, description=description, owner_id=user.id)
+    session.add(blog)
+
+    return blog
 
 
-async def get_and_update_blog(session: AsyncSession, blog_id: int, title: str, description: str, authors: List[any],
-                              post_id: List[any]) -> (Type[Blog] | None):
+async def get_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
+    blog = await session.get(Blog, blog_id, options=[
+            selectinload(Blog.authors),
+            selectinload(Blog.subscribed_users),
+            selectinload(Blog.posts)
+    ])
+
+    if not blog:
+        return None
+
+    return blog
+
+
+async def get_and_update_blog(session: AsyncSession, blog_id: int, title: str, description: str, authors: List[any]) -> (Type[Blog] | None):
 
     blog_db = await session.get(Blog, blog_id, options=[
             selectinload(Blog.authors)
@@ -52,15 +58,26 @@ async def get_and_update_blog(session: AsyncSession, blog_id: int, title: str, d
     blog_db.title = title
     blog_db.description = description
     blog_db.authors = []
-    blog_db.post_id = post_id if post_id[0].id else None
 
-    await load_associated_property(authors, session, blog_db, 'authors')
+    await load_associated_property(authors, session, blog_db, 'authors', User)
 
     return blog_db
 
 
-async def load_associated_property(property_name, session, model, column_db: str):
+async def get_and_delete_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
+    blog = await session.get(Blog, blog_id)
+
+    if not blog:
+        return None
+
+    await session.delete(blog)
+
+    return blog
+
+
+async def load_associated_property(property_name, session, model, column_db: str, add_model):
     if property_name:
         for obg_id in property_name:
-            obj_db = await session.get(User, obg_id.id)
-            getattr(model, column_db).append(obj_db)
+            obj_db = await session.get(add_model, obg_id)
+            if obj_db:
+                getattr(model, column_db).append(obj_db)
