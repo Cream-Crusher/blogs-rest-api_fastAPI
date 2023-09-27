@@ -3,7 +3,6 @@ from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.database import get_session
-from application.models.comment import Comment
 from application.schemas.comment_schemas import GetCommentsDTO, CreateCommentDTO, GetCommentDTO, GetAuthorDTO, \
     GetPostDTO, UpdateCommentDTO, DeleteCommentDTO
 from application.services.comment_service import get_comments, get_and_create_comment, get_and_update_comment, \
@@ -34,13 +33,13 @@ async def read_comments(session: AsyncSession = Depends(get_session)):
 
 @router.get('/comment/{comment_id}', response_model=GetCommentDTO, tags=['Comment'])
 async def read_post(comment_id: int, session: AsyncSession = Depends(get_session)):
-    comment = await session.get(Comment, comment_id)
+    comment = get_comment(session, comment_id)
 
     if not comment:
         raise HTTPException(status_code=404, detail=f'comment item wuth id {comment_id} not found')
 
-    author = GetAuthorDTO(id=comment.author_id)
-    post = GetPostDTO(id=comment.post_id)
+    author = GetAuthorDTO(id=comment.author.id, username=comment.author.username)
+    post = GetPostDTO(id=comment.post.id, title=comment.post.title)
 
     comment = GetCommentDTO(
         id=comment.id,
@@ -84,6 +83,5 @@ async def delete_blog(comment_id: int, session: AsyncSession = Depends(get_sessi
     if not comment_db:
         raise HTTPException(status_code=404, detail=f'COmment item wuth id {comment_id} not found')
 
-    await session.delete(comment_db)
     await session.commit()
     return comment_db

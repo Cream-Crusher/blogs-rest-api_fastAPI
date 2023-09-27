@@ -1,5 +1,3 @@
-from typing import List
-
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -14,12 +12,12 @@ class DeleteCommentDTO(BaseModel):
 
 class GetAuthorDTO(BaseModel):
     id: int
-    #username: str
+    username: str
 
 
 class GetPostDTO(BaseModel):
     id: int
-    #title: str
+    title: str
 
 
 class CreateCommentDTO(CommentBaseDTO):
