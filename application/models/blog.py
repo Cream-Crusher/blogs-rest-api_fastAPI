@@ -27,5 +27,5 @@ class Blog(Base):
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     owner = relationship('User')
 
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=True)
-    posts = relationship('Post')
+    # post_id = Column(Integer, ForeignKey('posts.id'), nullable=True)
+    posts = relationship('Post')  # TODO Так работает или нет?

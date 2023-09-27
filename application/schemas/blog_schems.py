@@ -17,25 +17,13 @@ class GetBlogUsersDTO(BaseModel):
     username: str
 
 
-class GetBlogAuthorsDTO(BaseModel):
-    id: int
-
-
-class GetBLogOwnerDTO(BaseModel):
-    id: int
-
-
-class GetPostDTO(BaseModel):
-    id: int = None
-
-
 class CreateBlogDTO(BlogBaseDTO):
-    owner_id: List[GetBLogOwnerDTO] = None
+    owner_id: int = None
 
 
 class UpdateBlogDTO(BlogBaseDTO):
-    authors: List[GetBlogAuthorsDTO] = None
-    post_id: List[GetPostDTO] = None
+    authors: Optional[List[int]] = None
+    post_id: List[int] = None
 
 
 class GetBLogsDTO(BlogBaseDTO):
@@ -50,5 +38,5 @@ class GetBLogDTO(BlogBaseDTO):
     updated_at: Optional[datetime]
     subscribed_users: Optional[List[GetBlogUsersDTO]] = None
     authors: Optional[List[GetBlogUsersDTO]] = None
-    owner: List[GetBLogOwnerDTO] = None
-    posts: Optional[List[GetPostDTO]] = None
+    owner: int = None
+    posts: Optional[List[int]] = None

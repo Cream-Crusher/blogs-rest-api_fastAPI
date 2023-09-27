@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from application.models.blog import Blog
 from application.models.post import Post
 from application.models.user import User
 
@@ -9,7 +10,7 @@ from typing import Sequence, Type, List
 
 
 async def get_users(session: AsyncSession) -> Sequence[User] | None:
-    users_db = await session.execute(select(User).limit(10))
+    users_db = await session.execute(select(User))
     users_db = users_db.scalars().all()
 
     if not users_db:
@@ -53,22 +54,23 @@ async def get_and_update_user(session: AsyncSession, user_id: int, username: str
     if not user_db:
         return None
 
-    user_db.username = username
     user_db.email = email
+    user_db.username = username
     user_db.password = password
     user_db.blogs_subscriptions = []
     user_db.post_likes = []
     user_db.blogs_authors = []
 
-    await load_associated_property(blogs_subscriptions, session, user_db, 'blogs_subscriptions')
-    await load_associated_property(blogs_authors, session, user_db, 'blogs_authors')
-    await load_associated_property(post_likes, session, user_db, 'post_likes')
+    await load_associated_property(post_likes, session, user_db, 'post_likes', Post)
+    await load_associated_property(blogs_subscriptions, session, user_db, 'blogs_subscriptions', Blog)
+    await load_associated_property(blogs_authors, session, user_db, 'blogs_authors', Blog)
 
     return user_db
 
 
-async def load_associated_property(property_name, session, model, column_db: str):
+async def load_associated_property(property_name, session, model, column_db: str, add_model):
     if property_name:
         for obg_id in property_name:
-            obj_db = await session.get(Post, obg_id)
-            getattr(model, column_db).append(obj_db)
+            obj_db = await session.get(add_model, obg_id)
+            if obj_db:
+                getattr(model, column_db).append(obj_db)

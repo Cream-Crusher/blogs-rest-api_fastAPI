@@ -32,9 +32,9 @@ class GetPostLikesDTO(BaseModel):
 
 class UpdateUserDTO(UserSchemaDTO):
     password: str
-    blogs_subscriptions: Optional[List[int]]
-    blogs_authors: Optional[List[int]]
-    post_likes: Optional[List[int]]
+    blogs_subscriptions: List[int] = None
+    blogs_authors: List[int] = None
+    post_likes: List[int] = None
 
 
 class GetUserDTO(UserSchemaDTO):

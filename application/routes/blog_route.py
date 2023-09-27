@@ -7,7 +7,7 @@ from application.database import get_session
 from application.models.blog import Blog
 from application.models.user import User
 from application.schemas.blog_schems import GetBLogDTO, DeleteBlogDTO, CreateBlogDTO, UpdateBlogDTO, GetBLogsDTO, \
-    GetBlogUsersDTO, GetBLogOwnerDTO, GetPostDTO
+    GetBlogUsersDTO
 from application.services.blog_service import get_blog, get_and_create_blog, get_and_update_blog, get_blogs
 
 router = APIRouter()
@@ -18,7 +18,7 @@ async def read_blogs(session: AsyncSession = Depends(get_session)):
     blogs_db = await get_blogs(session)
 
     if not blogs_db:
-        raise HTTPException(status_code=400, detail=('Blog not found'))
+        raise HTTPException(status_code=400, detail='Blog not found')
 
     blogs_db = [
         GetBLogsDTO(
@@ -46,8 +46,7 @@ async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
 
     blogs_subscriptions = [GetBlogUsersDTO(id=sub.id, username=sub.username) for sub in blog.subscribed_users]
     authors = [GetBlogUsersDTO(id=author.id, username=author.username) for author in blog.authors]
-    owner = GetBLogOwnerDTO(id=blog.owner_id)
-    posts = GetPostDTO(id=blog.post_id) if blog.post_id else None
+    posts = (id=blog.post_id) if blog.post_id else None
 
     blog = GetBLogDTO(
         id=blog.id,
@@ -57,7 +56,7 @@ async def read_blog(blog_id: int, session: AsyncSession = Depends(get_session)):
         updated_at=blog.updated_at,
         subscribed_users=blogs_subscriptions,
         authors=authors,
-        owner=[owner],
+        owner=blog.owner_id,
         posts=posts
     )
 
