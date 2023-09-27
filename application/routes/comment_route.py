@@ -16,7 +16,7 @@ async def read_comments(session: AsyncSession = Depends(get_session)):
     comments_db = await get_comments(session)
 
     if not comments_db:
-        raise HTTPException(status_code=400, detail=('Comment not found'))
+        raise HTTPException(status_code=400, detail='Comment not found')
 
     comments_db = [
         GetCommentsDTO(

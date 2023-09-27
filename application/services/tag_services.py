@@ -17,19 +17,19 @@ async def get_tags(session: AsyncSession) -> Sequence[Tag] | None:
 
 
 async def get_and_create_tag(session: AsyncSession, tag_name: str) -> Tag:
-    tag_db = Tag(tag_name=tag_name)
-    session.add(tag_db)
+    tag = Tag(tag_name=tag_name)
+    session.add(tag)
 
-    return tag_db
+    return tag
 
 
 async def get_tag(session: AsyncSession, tag_id: int) -> Type[Tag] | None:
-    tag_db = await session.get(Tag, tag_id)
+    tag = await session.get(Tag, tag_id)
 
-    if not tag_db:
+    if not tag:
         return None
 
-    return tag_db
+    return tag
 
 
 async def get_and_update_tag(session: AsyncSession, tag_id: int, tag_name: str) -> (Type[Tag] | None):
@@ -42,3 +42,14 @@ async def get_and_update_tag(session: AsyncSession, tag_id: int, tag_name: str) 
     tag_db.tag_name = tag_name
 
     return tag_db
+
+
+async def get_and_delete_tag(session: AsyncSession, tag_id: int) -> Type[Tag] | None:
+    tag = await session.get(Tag, tag_id)
+
+    if not tag:
+        return None
+
+    await session.delete(tag)
+
+    return tag

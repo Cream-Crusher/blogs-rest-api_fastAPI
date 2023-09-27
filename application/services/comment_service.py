@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from application.models.blog import Blog
 from application.models.comment import Comment
 
 from typing import Sequence, Type
@@ -45,14 +44,3 @@ async def get_and_update_comment(session: AsyncSession, comment_id: int, body: s
     comment_db.body = body
 
     return comment_db
-
-
-async def get_and_delete_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
-    blog = await session.get(Blog, blog_id)
-
-    if not blog:
-        return None
-
-    await session.delete(blog)
-
-    return blog
