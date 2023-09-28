@@ -7,6 +7,8 @@ from application.models.user import User
 
 from typing import Sequence, Type, List
 
+from application.services.services_extensions import load_associated_property
+
 
 async def get_blogs(session: AsyncSession) -> Sequence[Blog] | None:
     blogs_db = await session.execute(
@@ -73,11 +75,3 @@ async def get_and_delete_blog(session: AsyncSession, blog_id: int) -> Type[Blog]
     await session.delete(blog)
 
     return blog
-
-
-async def load_associated_property(property_name, session, model, column_db: str, add_model):
-    if property_name:
-        for obg_id in property_name:
-            obj_db = await session.get(add_model, obg_id)
-            if obj_db:
-                getattr(model, column_db).append(obj_db)

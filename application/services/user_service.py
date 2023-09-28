@@ -8,6 +8,8 @@ from application.models.user import User
 
 from typing import Sequence, Type, List
 
+from application.services.services_extensions import load_associated_property
+
 
 async def get_users(session: AsyncSession) -> Sequence[User] | None:
     users_db = await session.execute(select(User))
@@ -66,11 +68,3 @@ async def get_and_update_user(session: AsyncSession, user_id: int, username: str
     await load_associated_property(blogs_authors, session, user_db, 'blogs_authors', Blog)
 
     return user_db
-
-
-async def load_associated_property(property_name, session, model, column_db: str, add_model):
-    if property_name:
-        for obg_id in property_name:
-            obj_db = await session.get(add_model, obg_id)
-            if obj_db:
-                getattr(model, column_db).append(obj_db)

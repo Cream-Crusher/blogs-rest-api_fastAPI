@@ -8,6 +8,8 @@ from application.models.user import User
 
 from typing import Sequence, Type
 
+from application.services.services_extensions import load_associated_property
+
 
 async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
     posts = await session.execute(
@@ -76,11 +78,3 @@ async def get_and_delete_post(session: AsyncSession, post_id: int) -> Type[Post]
     await session.delete(post)
 
     return post
-
-
-async def load_associated_property(property_name, session, model, column_db: str, add_model):
-    if property_name:
-        for obg_id in property_name:
-            obj_db = await session.get(add_model, obg_id)
-            if obj_db:
-                getattr(model, column_db).append(obj_db)
