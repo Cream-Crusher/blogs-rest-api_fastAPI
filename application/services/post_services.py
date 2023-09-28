@@ -3,13 +3,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from application.models.post import Post
+from application.models.tag import Tag
 from application.models.user import User
 
 from typing import Sequence, Type
 
 
 async def get_posts(session: AsyncSession) -> Sequence[Post] | None:
-    posts = await session.execute(select(Post))
+    posts = await session.execute(
+        select(Post)
+        .options(selectinload(Post.tags))
+    )
     posts = posts.scalars().all()
 
     if not posts:
@@ -33,7 +37,8 @@ async def get_and_create_post(session: AsyncSession, title: str, body: str, is_p
 async def get_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
     post = await session.get(Post, post_id, options=[
             selectinload(Post.author),
-            selectinload(Post.blog)
+            selectinload(Post.blog),
+            selectinload(Post.tags)
     ])
 
     if not post:
@@ -42,19 +47,24 @@ async def get_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
     return post
 
 
-async def get_and_update_post(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool) -> \
+async def get_and_update_post(session: AsyncSession, post_id: int, title: str, body: str, is_published: bool, tags_ids: [any]) -> \
         (Type[Post] | None):
 
-    post_db = await session.get(Post, post_id)
+    post = await session.get(Post, post_id, options=[
+        selectinload(Post.tags)
+    ])
 
-    if not post_db:
+    if not post:
         return None
 
-    post_db.title = title
-    post_db.body = body
-    post_db.is_published = is_published
+    post.title = title
+    post.body = body
+    post.is_published = is_published
+    post.tags = []
 
-    return post_db
+    await load_associated_property(tags_ids, session, post, 'tags', Tag)
+
+    return post
 
 
 async def get_and_delete_post(session: AsyncSession, post_id: int) -> Type[Post] | None:
@@ -66,3 +76,11 @@ async def get_and_delete_post(session: AsyncSession, post_id: int) -> Type[Post]
     await session.delete(post)
 
     return post
+
+
+async def load_associated_property(property_name, session, model, column_db: str, add_model):
+    if property_name:
+        for obg_id in property_name:
+            obj_db = await session.get(add_model, obg_id)
+            if obj_db:
+                getattr(model, column_db).append(obj_db)

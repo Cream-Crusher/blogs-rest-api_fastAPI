@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.database import get_session
 from application.schemas.post_schems import CreatePostDTO, UpdatePostDTO, GetPostDTO, GetPostsDTO, DeletePostDTO, \
-    GetPostAuthorDTO, GetBlogDTO
+    GetPostAuthorDTO, GetBlogDTO, GetPostTags
 from application.services.post_services import get_and_create_post, get_and_update_post, get_post, get_posts, \
     get_and_delete_post
 
@@ -26,7 +26,8 @@ async def read_posts(session: AsyncSession = Depends(get_session)):
             is_published=post.is_published,
             created_at=post.created_at,
             views=post.views,
-            blog_id=post.blog_id
+            blog_id=post.blog_id,
+            tag_name=[tag.id for tag in post.tags]
         )
         for post in posts
     ]
@@ -43,6 +44,7 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
 
     author = GetPostAuthorDTO(id=post.author.id, username=post.author.username)
     blog = GetBlogDTO(id=post.blog.id, title=post.blog.title)
+    tag = [GetPostTags(id=tag.id, tag_name=tag.tag_name) for tag in post.tags]
 
     post = GetPostDTO(
         id=post.id,
@@ -52,7 +54,8 @@ async def read_post(post_id: int, session: AsyncSession = Depends(get_session)):
         created_at=post.created_at,
         views=post.views,
         author=author,
-        blog=blog
+        blog=blog,
+        tag_name=tag
     )
 
     return post
@@ -72,7 +75,7 @@ async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_s
         body=post.body,
         is_published=post.is_published,
         author_id=post.author_id,
-        blog_id=post.blog_id
+        blog_id=post.blog_id,
     )
 
     return post
@@ -80,13 +83,20 @@ async def create_post(post: CreatePostDTO, session: AsyncSession = Depends(get_s
 
 @router.put('/post/{post_id}', response_model=UpdatePostDTO, tags=['Post'])
 async def update_blog(post_id: int, post: UpdatePostDTO, session: AsyncSession = Depends(get_session)):
-    post_db = await get_and_update_post(session, post_id, post.title, post.body, post.is_published)
+    post = await get_and_update_post(session, post_id, post.title, post.body, post.is_published, post.tags)
 
-    if not post_db:
+    if not post:
         raise HTTPException(status_code=404, detail=f'Post item wuth id {post_id} not found')
 
+    tags_ids = [tag.id for tag in post.tags]
+
     await session.commit()
-    return post_db
+    return UpdatePostDTO(
+        title=post.title,
+        body=post.body,
+        is_published=post.is_published,
+        tags=tags_ids
+    )
 
 
 @router.delete('/post/{post_id}', response_model=DeletePostDTO, tags=['Post'])

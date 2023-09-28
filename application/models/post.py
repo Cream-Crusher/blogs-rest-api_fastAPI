@@ -21,9 +21,9 @@ class Post(Base):
     likes: Mapped[List['User']] = relationship(
         secondary=users_post_likes, back_populates='post_likes'
     )
-    # tags: Mapped[List['Tag']] = relationship(
-    #     secondary='association_table_tags'
-    # )
+    tags: Mapped[List['Tag']] = relationship(
+        secondary='association_table_tags'
+    )
 
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User')

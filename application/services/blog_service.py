@@ -48,20 +48,20 @@ async def get_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
 
 async def get_and_update_blog(session: AsyncSession, blog_id: int, title: str, description: str, authors: List[any]) -> (Type[Blog] | None):
 
-    blog_db = await session.get(Blog, blog_id, options=[
+    blog = await session.get(Blog, blog_id, options=[
             selectinload(Blog.authors)
         ])
 
-    if not blog_db:
+    if not blog:
         return None
 
-    blog_db.title = title
-    blog_db.description = description
-    blog_db.authors = []
+    blog.title = title
+    blog.description = description
+    blog.authors = []
 
-    await load_associated_property(authors, session, blog_db, 'authors', User)
+    await load_associated_property(authors, session, blog, 'authors', User)
 
-    return blog_db
+    return blog
 
 
 async def get_and_delete_blog(session: AsyncSession, blog_id: int) -> Type[Blog] | None:
